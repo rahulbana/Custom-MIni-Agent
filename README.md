@@ -77,8 +77,8 @@ OPENAI_MODEL=gpt-4-turbo-preview   # optional
 
 Get keys:
 
-- [OpenAI API](https://openai.com/){:target="_blank"}
-- [Tavily API](https://tavily.com/){:target="_blank"}
+- [OpenAI API](https://openai.com/)
+- [Tavily API](https://tavily.com/)
 
 
 ### 5. Run the agent
@@ -190,10 +190,10 @@ Feel free to open issues or pull requests. Suggestions for better prompts, addit
 
 ### 🙏 Acknowledgements
 
-- [OpenAI](https://openai.com/){:target="_blank"} – LLM API
-- [Tavily](https://tavily.com/){:target="_blank"} – Search engine for AI agents
-- [Tenacity](https://tenacity.readthedocs.io/){:target="_blank"} – Retry library
-- [Pydantic](https://docs.pydantic.dev/){:target="_blank"} – Data validation
-- [Loguru](https://loguru.readthedocs.io/){:target="_blank"} – Logging
+- [OpenAI](https://openai.com/) – LLM API
+- [Tavily](https://tavily.com/) – Search engine for AI agents
+- [Tenacity](https://tenacity.readthedocs.io/) – Retry library
+- [Pydantic](https://docs.pydantic.dev/) – Data validation
+- [Loguru](https://loguru.readthedocs.io/) – Logging
 
 
