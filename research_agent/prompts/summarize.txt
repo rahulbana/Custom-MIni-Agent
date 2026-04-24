@@ -1,3 +1,10 @@
-Summarize the following source in up to {max_tokens} characters, keeping key facts and citations:
+Extract the **key factual claims** from the text below, along with any supporting evidence or numbers. 
+Only include statements that are directly supported by the text. 
+If the source is opinion or speculative, label it as "[Speculative]". 
+If a date, author, or institution is mentioned, include that in parentheses.
+
+Output format: bullet points, each starting with a fact, then the source reference in parentheses.
+
+Text to summarise (max {max_tokens} characters):
 
 {text}

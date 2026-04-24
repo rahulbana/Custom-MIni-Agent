@@ -12,7 +12,7 @@ class ResearchAgent:
         self.llm = llm or LLMClient()
         self.search = search or SearchTool()
     
-    async def research(self, topic: str, depth: int = 2) -> Dict[str, Any]:
+    async def research(self, topic: str, depth: int = 2, verify: bool = True) -> Dict[str, Any]:
         logger.info(f"Starting research: {topic}")
         queries = await self._generate_queries(topic)
         all_results = await self._gather_information(queries)
@@ -25,9 +25,15 @@ class ResearchAgent:
                 all_results.extend(new_results)
                 report = await self._synthesize(topic, all_results, previous_report=report)
         
+        final_report = report["final_report"]
+        
+        if verify:
+            verification = await self._verify_claims(final_report, all_results)
+            final_report += "\n\n" + verification
+        
         return {
             "topic": topic,
-            "report": report["final_report"],
+            "report": final_report,
             "sources": list({res["url"] for res in all_results if "url" in res}),
             "summary": report["summary"]
         }
@@ -93,3 +99,34 @@ class ResearchAgent:
         summary_prompt = summary_prompt_template.format(report=final_report)
         summary = await self.llm.generate(summary_prompt, system_prompt=None)
         return {"final_report": final_report, "summary": summary}
+
+    async def _verify_claims(self, report: str, search_results: List[Dict]) -> str:
+        """
+        Extract claims from report (simple heuristic: sentences with [X] citations)
+        and verify them against the corresponding source content.
+        Returns a verification summary string.
+        """
+        import re
+        # Find all claims that include a citation like [1], [2], etc.
+        claim_pattern = re.compile(r'([^.!?]+[.!?])\s*\[(\d+)\]')
+        claims = claim_pattern.findall(report)
+        
+        if not claims:
+            return "No claim‑citation pairs found to verify."
+        
+        verification_lines = []
+        for sentence, source_num in claims:
+            source_num = int(source_num)
+            if source_num <= len(search_results):
+                source_content = search_results[source_num - 1].get("content", "")
+                if not source_content:
+                    source_content = "[No content available]"
+                prompt_template = load_prompt("verify_claims")
+                prompt = prompt_template.format(claim=sentence.strip(), source_content=source_content[:1500])
+                system = "You return only the category and a short explanation."
+                response = await self.llm.generate(prompt, system_prompt=system)
+                verification_lines.append(f"Claim: {sentence[:100]}... | Source {source_num} | {response}")
+            else:
+                verification_lines.append(f"Claim: {sentence[:100]}... | Source {source_num} not found.")
+        
+        return "## Verification Report\n\n" + "\n".join(verification_lines)

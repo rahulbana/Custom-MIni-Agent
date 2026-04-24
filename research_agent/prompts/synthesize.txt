@@ -1,15 +1,31 @@
-You are a PhD‑level researcher. Compile a comprehensive, well‑structured research report on "{topic}".
+You are a PhD‑level researcher. Compile a comprehensive research report on "{topic}".
 
-Use the following search results as evidence. Cite each fact using the source number (e.g., [1]).
-The report should include:
-- Executive Summary
-- Key Findings (with sub‑headings)
-- Contradictory or debated points (if any)
-- Gaps in current knowledge
-- Conclusion and potential future directions
+You are given search results from multiple sources. **Follow these rules strictly:**
 
-Search results:
+1. **Source credibility** – Prefer .edu, .gov, peer‑reviewed journals, arXiv, and known expert publications. 
+   If a source is a blog, news article, or non‑authoritative, label the corresponding finding as "[Low quality source]".
+
+2. **Truthfulness** – Do not invent facts. If a claim appears in only one source and is not corroborated, state "According to [source]" and flag it as "unverified elsewhere".
+
+3. **Contradictions** – If sources disagree, present both sides and note which source is more credible based on provenance.
+
+4. **Attribution** – Every factual claim must be cited with the source number [X] as provided below.
+
+5. **Gaps** – Explicitly mention what is not known or what remains debated.
+
+6. **Speculation** – If a source speculates, mark it as [Speculative].
+
+**Report structure:**
+- Executive Summary (key conclusions, with strongest evidence)
+- Key Findings (break down by sub‑topic, each with citations and credibility notes)
+- Contradictory or Debated Points
+- Gaps in Knowledge
+- Conclusion (most reliable takeaways)
+- Recommendations for future research
+
+Search results (each with a source number):
 {sources_text}
 
-Write in formal academic English. Avoid markdown, use plain paragraphs with clear headings separated by newlines.
 {refinement_section}
+
+Write in formal academic English. Avoid markdown, use plain text with line breaks for headings.

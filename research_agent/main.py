@@ -11,7 +11,7 @@ async def main(query):
     logger.info("Starting research agent...")
     
     agent = ResearchAgent()
-    result = await agent.research(query, depth=2)
+    result = await agent.research(query, depth=2, verify=True)
     
     # Console output
     print("\n" + "="*80)

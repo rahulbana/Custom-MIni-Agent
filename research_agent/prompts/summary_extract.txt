@@ -1,3 +1,7 @@
-Provide a 3‑sentence summary of the following research report:
+From the research report below, produce a **3‑sentence summary** that:
+- States the most reliable conclusion (with strongest evidence)
+- Mentions the main authoritative sources used
+- Notes any major caveats or uncertainty
 
+Research report:
 {report}

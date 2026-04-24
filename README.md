@@ -2,21 +2,23 @@
 
 # 🎓 PhD‑Level Research Agent
 
-An autonomous AI agent that conducts **multi‑step, PhD‑level research** on any topic using internet search and OpenAI’s GPT‑4. It decomposes questions, searches in parallel, synthesizes findings, cites sources, and iteratively refines results.
+An autonomous AI agent that conducts **multi‑step, PhD‑level research** on any topic using internet search and OpenAI’s GPT‑4. It decomposes questions, searches in parallel, synthesizes findings, cites sources, iteratively refines results, and **optionally fact‑checks its own claims**.
 
 Built with production‑grade patterns: async I/O, retries with exponential backoff, Pydantic config, structured logging, and prompt separation.
+
 
 ---
 
 ## ✨ Features
 
-- **Intelligent query decomposition** – Breaks a broad topic into 3–5 focused search queries.
+- **Intelligent query decomposition** – Breaks a broad topic into 3–5 focused search queries, targeting authoritative sources (peer‑reviewed journals, .edu, .gov, expert publications).
 - **Parallel web search** – Uses Tavily API (LLM‑optimised search) with async concurrency.
-- **Automatic summarisation** – Truncates long results to stay within token limits.
+- **Automatic summarisation** – Truncates long results to stay within token limits, extracting facts with source metadata.
 - **Multi‑step refinement** – Optionally performs a second pass with follow‑up questions.
 - **Source attribution** – Every claim is cited with source numbers `[1]` in the final report.
 - **Structured outputs** – Produces a well‑organised Markdown report with executive summary, key findings, contradictions, gaps, and conclusion.
-- **Production infrastructure** – Retries, logging, directory separation, environment variables.
+- **Fact‑checking (optional)** – After synthesis, the agent verifies each claim against its original source and appends a **Verification Report** (VERIFIED / PARTIALLY SUPPORTED / CONTRADICTED / LOW QUALITY SOURCE).
+- **Production infrastructure** – Retries, logging, directory separation, environment variables, and prompt templating.
 
 ---
 
@@ -26,11 +28,12 @@ ResearchAgent
 - **LLMClient** (OpenAI with retries)
 - **SearchTool** (Tavily)
 - **Prompt templates** (stored as `.txt` files)
+- **Verification step** (optional)
 
 
 
 **Flow**  
-`topic` → generate queries → parallel search → summarise (if needed) → synthesise → (depth>1) follow‑up queries → synthesise again → final report
+`topic` → generate queries → parallel search → summarise (with credibility focus) → synthesise → (depth>1) follow‑up queries → synthesise again → *optional verification* → final report + verification report
 
 ---
 
@@ -109,7 +112,8 @@ custom-mini-agent/
     │   ├── generate_followup.txt
     │   ├── summarize.txt
     │   ├── synthesize.txt
-    │   └── summary_extract.txt
+    │   ├── summary_extract.txt
+    │   └── verify_claims.txt  # Used only when verification enabled
     ├── agent.py               # ResearchAgent core logic
     └── main.py                # CLI entry point
 ```
@@ -132,18 +136,22 @@ You can also change the output/log directories inside `config.py` (`LOGS_DIR`, `
 
 ### 🧠 Prompt Customisation
 
-All prompts are stored as plain text files in r`esearch_agent/prompts/`.
-You can edit them without touching Python code – perfect for iterative prompt engineering.
+# Prompts Storage and Editing
 
-Example `prompts/generate_queries.txt`:
+All prompts are stored as plain text files in `research_agent/prompts/`. You can edit them without touching Python code – perfect for iterative prompt engineering.
 
-```
-You are a senior research scientist. Your task is to break down the following research topic into 3-5 specific, concise search engine queries. Each query should explore a different facet of the topic.
-Topic: {topic}
-Return only a JSON array of strings, e.g. ["query1", "query2", ...].
-```
+## Improved Prompts for Truthfulness & Source Credibility
 
-Just edit the file and rerun. the agent will use the new prompt.
+| Prompt file             | Purpose                                                                 |
+|-------------------------|-------------------------------------------------------------------------|
+| generate_queries.txt    | Targets authoritative sources (`.edu`, `.gov`, journals, arXiv)          |
+| summarize.txt           | Extracts factual claims with source metadata; flags speculation        |
+| synthesize.txt          | Produces a structured report, preferring credible sources, noting contradictions and knowledge gaps |
+| verify_claims.txt       | Fact‑checks each claim against its original source (optional step)     |
+
+## Example prompts/synthesize.txt (excerpt):
+
+> "If a source is a blog, news article, or non‑authoritative, label the finding as '[Low quality source]'. If a claim appears in only one source, state 'According to [source]' and flag as unverified elsewhere.""
 
 
 ### 📊 Outputs & Logging
@@ -152,7 +160,11 @@ Just edit the file and rerun. the agent will use the new prompt.
 Contains all debug/info/error messages from searches, LLM calls, and retries.
 
 - **Research reports** – `outputs/research_output_YYYYMMDD_HHMMSS.md`
-Each run creates a new timestamped Markdown file with the full report and source URLs.
+Each run creates a new timestamped Markdown file with:
+
+    - The main research report (with citations)
+
+    - Verification Report (if verify=True is passed)
 
 
 #### 🧪 Example
@@ -172,11 +184,18 @@ RESEARCH REPORT: The current state of quantum machine learning algorithms
 
 Executive Summary
 Quantum machine learning (QML) combines quantum computing with classical ML algorithms.
-Recent advances include quantum kernel methods and variational quantum circuits [1][3]...
+Recent advances include quantum kernel methods [1][3]...
 
 Key Findings
 1. Quantum advantage has been demonstrated for certain small‑scale problems [2].
-2. Major challenges remain in noise mitigation and qubit coherence [4].
+2. Major challenges remain in noise mitigation [4] (Source 4 is a university preprint, credible).
+
+...
+
+## Verification Report
+
+Claim: Quantum advantage has been demonstrated... | Source 1 | VERIFIED (paper states clear speedup)
+Claim: Major challenges remain in noise mitigation... | Source 4 | PARTIALLY SUPPORTED (source mentions noise but not mitigation)
 ...
 ================================================================================
 Sources used:
