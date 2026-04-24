@@ -1,4 +1,4 @@
-# Custom-Mini-Agent
+# Custom Agent
 
 # 🎓 PhD‑Level Research Agent
 
