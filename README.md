@@ -77,8 +77,8 @@ OPENAI_MODEL=gpt-4-turbo-preview   # optional
 
 Get keys:
 
-- [OpenAI API](https://openai.com/)
-- [Tavily API](https://tavily.com/)
+- [OpenAI API](https://openai.com/){:target="_blank"}
+- [Tavily API](https://tavily.com/) {:target="_blank"}
 
 
 ### 5. Run the agent
@@ -89,6 +89,7 @@ python -m research_agent.main
 
 ### 📂 Project Structure ###
 
+```
 custom-mini-agent/
 ├── .env
 ├── requirements.txt
@@ -111,7 +112,7 @@ custom-mini-agent/
     │   └── summary_extract.txt
     ├── agent.py               # ResearchAgent core logic
     └── main.py                # CLI entry point
-
+```
 
 ### ⚙️ Configuration
 
