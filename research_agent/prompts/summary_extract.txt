@@ -1,0 +1,3 @@
+Provide a 3‑sentence summary of the following research report:
+
+{report}

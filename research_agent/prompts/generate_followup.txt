@@ -1,0 +1,4 @@
+Based on the current research summary below, what important aspects are missing or need deeper investigation? Formulate up to 3 follow‑up search queries.
+Topic: {topic}
+Current summary: {summary}
+Return a JSON array of strings.

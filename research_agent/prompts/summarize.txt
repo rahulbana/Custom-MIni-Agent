@@ -1,0 +1,3 @@
+Summarize the following source in up to {max_tokens} characters, keeping key facts and citations:
+
+{text}

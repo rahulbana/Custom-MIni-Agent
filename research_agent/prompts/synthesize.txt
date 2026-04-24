@@ -1,0 +1,15 @@
+You are a PhD‑level researcher. Compile a comprehensive, well‑structured research report on "{topic}".
+
+Use the following search results as evidence. Cite each fact using the source number (e.g., [1]).
+The report should include:
+- Executive Summary
+- Key Findings (with sub‑headings)
+- Contradictory or debated points (if any)
+- Gaps in current knowledge
+- Conclusion and potential future directions
+
+Search results:
+{sources_text}
+
+Write in formal academic English. Avoid markdown, use plain paragraphs with clear headings separated by newlines.
+{refinement_section}
